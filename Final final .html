@@ -1,0 +1,958 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>Космозар — Учёт комплектов</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --text: #1c1c1e;
+      --text-secondary: #86868b;
+      --accent: #0077ff;
+      --red: #ff3b30;
+      --green: #34c759;
+      --blue: #0077ff;
+      --border: #e5e5ea;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --safe-area-top: env(safe-area-inset-top, 20px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1e;
+        --card-bg: #2c2c2e;
+        --text: #f5f5f7;
+        --text-secondary: #8e8e93;
+        --border: #3a3a3c;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 100vh;
+      padding: calc(var(--safe-area-top) + 12px) 16px var(--safe-area-bottom);
+    }
+    .container {
+      max-width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+    }
+    header {
+      padding: 24px 20px 16px;
+      text-align: center;
+      position: relative; /* Для позиционирования кнопки настроек */
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.5em;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .subtitle {
+      font-size: 0.9em;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .content {
+      padding: 16px;
+    }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.1em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: 0.2s;
+      color: white;
+      text-align: center;
+    }
+    .btn-yellow { background: #ffcc00; color: black; }
+    .btn-green { background: var(--green); }
+    .btn-orange { background: #ff9500; }
+    .btn-accent { background: var(--accent); }
+    .btn-red { background: var(--red); }
+    .btn-export-csv { background: var(--green); }
+    .btn-settings {
+        background: var(--border);
+        color: var(--text);
+        width: auto;
+        padding: 8px 12px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .btn:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+    /* Скрытие всех страниц по умолчанию */
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    /* Ввод ID */
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .input-group input, .input-group select {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-size: 1.1em;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .input-group input {
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
+    }
+    .input-group select {
+      flex: 2;
+      min-width: 150px;
+    }
+    .input-group.full-width {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .input-group.full-width input,
+    .input-group.full-width select,
+    .input-group.full-width textarea {
+        width: 100%;
+    }
+    .input-group textarea {
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        font-size: 1.1em;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 80px;
+        resize: vertical;
+    }
+    .input-label {
+        font-weight: 500;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .error {
+      color: var(--red);
+      font-size: 0.95em;
+      margin: 8px 0;
+      text-align: center;
+      min-height: 1.2em;
+      height: 1.2em;
+    }
+    .kits, .players {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .kit, .player {
+      background: var(--bg);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .kit-header, .player-header {
+      font-weight: 600;
+      font-size: 1.1em;
+      color: var(--text);
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .kit-list, .player-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .kit-item, .player-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9em;
+    }
+    .kit-item-header, .player-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kit-id, .player-id {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.05em;
+    }
+    .gun { color: #ff9500; }
+    .suit-red { color: var(--red); }
+    .suit-blue { color: var(--blue); }
+    .btn-config, .btn-delete, .btn-check {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 14px;
+      background: var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.1em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-delete { background: var(--red); color: white; }
+    .btn-check { background: var(--green); color: white; }
+    /* Чек-лист */
+    .checklist {
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .check-item label {
+      flex: 1;
+    }
+    .check-item input {
+      transform: scale(1.2);
+      margin-top: 2px;
+    }
+    .status {
+      font-weight: bold;
+      margin-top: 10px;
+      font-size: 1.1em;
+      padding: 8px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .status-ok {
+      background-color: rgba(52, 199, 89, 0.15);
+      color: var(--green);
+    }
+    .status-bad {
+      background-color: rgba(255, 59, 48, 0.15);
+      color: var(--red);
+    }
+    .status-na {
+       background-color: rgba(142, 142, 147, 0.15);
+       color: var(--text-secondary);
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 16px 30px;
+      font-size: 0.8em;
+      color: var(--text-secondary);
+    }
+    .back-btn {
+      margin-bottom: 12px;
+    }
+    /* Стиль для дополнительных параметров */
+    .additional-section {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+    }
+    .additional-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+    .kit-details, .player-details {
+        font-size: 0.9em;
+        color: var(--text-secondary);
+        margin-top: 8px;
+    }
+    .dip-display {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-family: monospace;
+    }
+    .dip-label {
+        font-weight: bold;
+        min-width: 20px;
+    }
+    .dip-value-on { color: var(--green); }
+    .dip-value-off { color: var(--text-secondary); }
+
+    /* Стили для меню настроек */
+    .settings-menu {
+        position: absolute;
+        top: 60px; /* Ниже кнопки настроек */
+        right: 20px;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 10px;
+        z-index: 1000;
+        min-width: 180px;
+    }
+    .settings-menu.hidden {
+        display: none;
+    }
+    .settings-menu .btn {
+        margin-bottom: 8px;
+        font-size: 1em;
+        padding: 12px;
+        width: 100%; /* Кнопки внутри меню на всю ширину */
+    }
+    .settings-menu .btn:last-child {
+        margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Главная: выбор действия -->
+  <div id="home" class="page active container">
+    <header>
+      <h1>🎯 Космозар</h1>
+      <div class="subtitle">Учёт комплектов</div>
+      <button class="btn btn-settings" onclick="toggleSettingsMenu()">⚙️</button>
+      <div id="settingsMenu" class="settings-menu hidden">
+        <button class="btn btn-orange" onclick="showPage('players'); toggleSettingsMenu();">👥 Игроки (DIP)</button>
+        <!-- Пункт "Выбор филиала" удален -->
+      </div>
+    </header>
+    <div class="content">
+      <div class="input-group">
+        <!-- Убран "Основной склад", заменено "ВДНХ" на "Водный Стадион" -->
+        <select id="currentBranchSelect" onchange="changeBranch(this.value)">
+          <option value="reutov">🏢 Реутов</option>
+          <option value="vdnh">🏢 Водный Стадион</option> <!-- Изменено -->
+          <option value="rostokino">🏢 Ростокино</option>
+        </select>
+      </div>
+      <button class="btn btn-accent" onclick="showPage('kits')">📋 Просмотр комплектов</button>
+      <button class="btn btn-green" onclick="showPage('addKit')">➕ Добавить комплект</button>
+      <button class="btn btn-export-csv" onclick="exportToCSV()">📊 Экспорт в CSV</button>
+    </div>
+    <div class="footer">Система учёта • v3.2</div>
+  </div>
+
+  <!-- Выбор филиала (остается как отдельная страница) -->
+  <div id="branchSelect" class="page container">
+    <header>
+      <h1>🏢 Выбор филиала</h1>
+      <div class="subtitle">Выберите активный филиал</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+      <!-- Убран "Основной склад", заменено "ВДНХ" на "Водный Стадион" -->
+      <button class="btn btn-yellow" onclick="setBranch('reutov')">🏢 Реутов</button>
+      <button class="btn btn-green" onclick="setBranch('vdnh')">🏢 Водный Стадион</button> <!-- Изменено -->
+      <button class="btn btn-orange" onclick="setBranch('rostokino')">🏢 Ростокино</button>
+    </div>
+    <div class="footer">Текущий филиал: <span id="currentBranchFooter">Реутов</span></div>
+  </div>
+
+  <!-- Просмотр комплектов -->
+  <div id="kits" class="page container">
+    <header>
+      <h1>📋 Комплекты</h1>
+      <div class="subtitle">Список всех комплектов (<span id="currentBranchKits"></span>)</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+      <div class="kits">
+        <div class="kit">
+          <div class="kit-header">🛡️ Комплекты</div>
+          <ul id="allKitsList" class="kit-list"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer">Учёт комплектов</div>
+  </div>
+
+  <!-- Добавление комплекта -->
+  <div id="addKit" class="page container">
+    <header>
+      <h1>➕ Добавить комплект</h1>
+      <div class="subtitle">Введите данные (<span id="currentBranchAdd"></span>)</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+
+      <div class="input-group">
+        <select id="newVestColor">
+          <option value="Красный">🔴 Красный</option>
+          <option value="Синий">🔵 Синий</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <input type="number" id="newBlasterID" min="1" max="99" placeholder="Бластер ID" inputmode="numeric">
+      </div>
+
+      <div class="input-group full-width">
+        <span class="input-label">Сотрудник</span>
+        <input type="text" id="employeeName" placeholder="Имя сотрудника">
+      </div>
+
+      <div class="input-group full-width">
+        <span class="input-label">Комментарий</span>
+        <textarea id="kitComment" placeholder="Дополнительная информация..."></textarea>
+      </div>
+
+      <button class="btn btn-accent" onclick="createNewKit()">Создать и проверить</button>
+      <div id="addError" class="error"></div>
+    </div>
+    <div class="footer">Добавление нового комплекта</div>
+  </div>
+
+  <!-- Просмотр игроков (DIP) -->
+  <div id="players" class="page container">
+    <header>
+      <h1>👥 Игроки</h1>
+      <div class="subtitle">Настройки DIP-переключателей</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+      <div class="players">
+        <div class="player">
+          <div class="player-header">🎚️ Настройки DIP</div>
+          <ul id="allPlayersList" class="player-list"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer">Игроки 1-30</div>
+  </div>
+
+  <!-- Проверка комплекта -->
+  <div id="inspectKit" class="page container">
+    <header>
+      <h1>🔧 Проверка комплекта</h1>
+      <div class="subtitle" id="inspectKitSubtitle">ID: -</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('kits')">← Назад</button>
+      <div id="inspectKitDetails" class="kit-details"></div>
+      <div class="checklist" id="inspectionChecklist">
+        <!-- Чекбоксы будут добавлены здесь динамически -->
+      </div>
+      <div id="kitStatus" class="status status-na">Статус: Не проверено</div>
+
+      <div class="input-group full-width" style="margin-top: 20px;">
+        <span class="input-label">Комментарий</span>
+        <textarea id="inspectionComment" placeholder="Дополнительная информация о проверке..."></textarea>
+      </div>
+
+      <button class="btn btn-green" onclick="saveInspection()">💾 Сохранить проверку</button>
+      <div id="saveError" class="error"></div>
+    </div>
+    <div class="footer">Проверка состояния</div>
+  </div>
+
+  <script>
+    // === УПРАВЛЕНИЕ ФИЛИАЛАМИ ===
+    // Убран "default", заменено "vdnh" на "Водный Стадион"
+    const BRANCHES = ['reutov', 'vdnh', 'rostokino'];
+    const BRANCH_NAMES = {
+        'reutov': 'Реутов',
+        'vdnh': 'Водный Стадион', // Изменено
+        'rostokino': 'Ростокино'
+    };
+
+    // Получаем текущий филиал из localStorage или устанавливаем по умолчанию (первый в списке)
+    let currentBranch = localStorage.getItem('cosmozar-current-branch') || BRANCHES[0];
+
+    // Функция для переключения меню настроек
+    function toggleSettingsMenu() {
+        const menu = document.getElementById('settingsMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    // Функция для изменения филиала через select
+    function changeBranch(branchId) {
+        if (BRANCHES.includes(branchId)) {
+            currentBranch = branchId;
+            localStorage.setItem('cosmozar-current-branch', currentBranch);
+            updateBranchDisplays();
+            loadAllKitsUI(); // Перезагружаем список для нового филиала
+        }
+    }
+
+    // Функция для установки филиала (с переходом на главную)
+    function setBranch(branchId) {
+        if (BRANCHES.includes(branchId)) {
+            currentBranch = branchId;
+            localStorage.setItem('cosmozar-current-branch', currentBranch);
+            updateBranchDisplays();
+            showPage('home');
+        }
+    }
+
+    // Обновление отображения текущего филиала
+    function updateBranchDisplays() {
+        const branchName = BRANCH_NAMES[currentBranch];
+        // Обновляем текст в select на главной
+        document.getElementById('currentBranchSelect').value = currentBranch;
+        // Обновляем футер на странице выбора филиала
+        document.getElementById('currentBranchFooter').textContent = branchName;
+        // Обновляем заголовки на других страницах
+        document.getElementById('currentBranchKits').textContent = branchName;
+        document.getElementById('currentBranchAdd').textContent = branchName;
+    }
+
+    // === МОДЕЛЬ ДАННЫХ С ФИЛИАЛАМИ ===
+    // Ключ для хранения данных по филиалам
+    const KITS_STORAGE_KEY = 'cosmozar-kits-by-branch-v3_2';
+
+    // Загружаем все данные из localStorage
+    let allBranchKits = JSON.parse(localStorage.getItem(KITS_STORAGE_KEY)) || {};
+
+    // Инициализируем данные для каждого филиала, если их нет
+    BRANCHES.forEach(branch => {
+        if (!allBranchKits[branch]) {
+            allBranchKits[branch] = [];
+        }
+    });
+
+    // Получаем комплекты для текущего филиала
+    function getCurrentBranchKits() {
+        return allBranchKits[currentBranch] || [];
+    }
+
+    // Сохраняем все данные
+    function saveAllBranchKits() {
+        localStorage.setItem(KITS_STORAGE_KEY, JSON.stringify(allBranchKits));
+    }
+
+    // Структура комплекта (без ID жилета)
+    function createKitSkeleton(vestColor, blasterId = null, employee = '', comment = '') {
+        const now = new Date().toLocaleDateString('ru-RU');
+        return {
+            id: generateKitId(),
+            vestColor: vestColor,
+            blasterId: blasterId,
+            status: "НАДО",
+            isVestSuitable: true,
+            checks: {
+                vestHits: true,
+                vestWire: true,
+                vestVibro: true,
+                vestLaser: true,
+                vestSound: true,
+                vestDisplay: true,
+                vestSideStripes: true,
+                vestBodyHalves: true,
+                vestScrews: true,
+                vestTrigger: true,
+                vestSensorCover: true,
+                vestNoCracks: true,
+                vestStickers: true,
+                vestBeltBuckles: true,
+            },
+            batteryType: "Li-ion",
+            lastInspectionDate: now,
+            employee: employee,
+            comment: comment
+        };
+    }
+
+    function generateKitId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+
+    // === СТРАНИЦА: ПРОСМОТР КОМПЛЕКТОВ ===
+    function loadAllKitsUI() {
+        const kits = getCurrentBranchKits();
+        const list = document.getElementById('allKitsList');
+        list.innerHTML = '';
+        if (kits.length === 0) {
+            list.innerHTML = '<li class="kit-item" style="text-align:center;">Нет комплектов</li>';
+            return;
+        }
+        kits.forEach(kit => {
+            const item = document.createElement('li');
+            item.className = 'kit-item';
+            const statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
+            const statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+
+            const vestColorEmoji = kit.vestColor === 'Красный' ? '🔴' : '🔵';
+            const vestColorClass = kit.vestColor === 'Красный' ? 'suit-red' : 'suit-blue';
+
+            item.innerHTML = `
+                <div class="kit-item-header">
+                    <div class="kit-id">
+                        <span class="${vestColorClass}">${vestColorEmoji}</span>
+                        ${kit.vestColor} ${kit.blasterId ? `| Бластер: ${kit.blasterId}` : ''}
+                    </div>
+                    <div style="display:flex; gap: 8px;">
+                        <button class="btn-check" onclick="inspectKit('${kit.id}')">🔧</button>
+                        <button class="btn-delete" onclick="deleteKit('${kit.id}')">✕</button>
+                    </div>
+                </div>
+                <div class="kit-details">
+                    Дата: ${kit.lastInspectionDate} | Сотрудник: ${kit.employee || '-'}
+                    ${kit.comment ? `<br>Комментарий: ${kit.comment}` : ''}
+                </div>
+                <div class="status ${statusClass}">${statusText}</div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    // === СТРАНИЦА: ДОБАВЛЕНИЕ КОМПЛЕКТА ===
+    function createNewKit() {
+        const vestColor = document.getElementById('newVestColor').value;
+        const blasterId = document.getElementById('newBlasterID').value ? parseInt(document.getElementById('newBlasterID').value) : null;
+        const employee = document.getElementById('employeeName').value.trim();
+        const comment = document.getElementById('kitComment').value.trim();
+        const error = document.getElementById('addError');
+        error.textContent = '';
+
+        const newKit = createKitSkeleton(vestColor, blasterId, employee, comment);
+
+        // Добавляем в массив текущего филиала
+        allBranchKits[currentBranch].push(newKit);
+        saveAllBranchKits();
+
+        document.getElementById('newBlasterID').value = '';
+        document.getElementById('employeeName').value = '';
+        document.getElementById('kitComment').value = '';
+
+        inspectKit(newKit.id);
+    }
+
+    // === СТРАНИЦА: ПРОВЕРКА КОМПЛЕКТА ===
+    let currentInspectingKitId = null;
+    function inspectKit(kitId) {
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === kitId);
+        if (!kit) {
+            alert('Комплект не найден');
+            showPage('kits');
+            return;
+        }
+        currentInspectingKitId = kitId;
+        document.getElementById('inspectKitSubtitle').textContent = `${kit.vestColor} ${kit.blasterId ? `| Бластер: ${kit.blasterId}` : ''}`;
+        document.getElementById('inspectKitDetails').innerHTML = `
+            Цвет: ${kit.vestColor} | Дата: ${kit.lastInspectionDate} | Сотрудник: ${kit.employee || '-'}
+            ${kit.comment ? `<br>Комментарий: ${kit.comment}` : ''}
+        `;
+        document.getElementById('inspectionComment').value = kit.comment || '';
+
+        const checklist = document.getElementById('inspectionChecklist');
+        checklist.innerHTML = '';
+
+        const mainVestChecks = [
+            { id: 'vestHits', label: 'Автомат поражает цель' },
+            { id: 'vestWire', label: 'Провод автомат жилет цел, светодиоды не мерцают при изгибе провода.' },
+            { id: 'vestVibro', label: 'Вибро срабатывает' },
+            { id: 'vestLaser', label: 'Лазер работает' },
+            { id: 'vestSound', label: 'Звук работает' },
+            { id: 'vestDisplay', label: 'Работают все сектора дисплея' }
+        ];
+        mainVestChecks.forEach(check => {
+            const div = document.createElement('div');
+            div.className = 'check-item';
+            div.innerHTML = `
+                <input type="checkbox" id="chk-${check.id}" ${kit.checks[check.id] ? 'checked' : ''} onchange="updateKitCheck('${check.id}', this.checked)">
+                <label for="chk-${check.id}">${check.label}</label>
+            `;
+            checklist.appendChild(div);
+        });
+
+        const additionalVestChecks = [
+            { id: 'vestSideStripes', label: 'Целы цветные полосы по бокам автомата' },
+            { id: 'vestBodyHalves', label: 'Половинки корпуса плотно стянуты' },
+            { id: 'vestScrews', label: 'Винты есть там где возможно' },
+            { id: 'vestTrigger', label: 'Курок мягкий и срабатывает сразу' },
+            { id: 'vestSensorCover', label: 'Прозрачные крышки на жилете целы, бумажные вкладыши выглядят хорошо.' },
+            { id: 'vestNoCracks', label: 'На пластике жилета нет незашитых трещин' },
+            { id: 'vestStickers', label: 'Наклейки выглядят хорошо' },
+            { id: 'vestBeltBuckles', label: 'Пластиковые защёлки ремней целы' }
+        ];
+        const additionalSection = document.createElement('div');
+        additionalSection.className = 'additional-section';
+        additionalSection.innerHTML = '<div class="additional-title">Дополнительные параметры жилета</div>';
+        additionalVestChecks.forEach(check => {
+            const div = document.createElement('div');
+            div.className = 'check-item';
+            div.innerHTML = `
+                <input type="checkbox" id="chk-${check.id}" ${kit.checks[check.id] ? 'checked' : ''} onchange="updateKitCheck('${check.id}', this.checked)">
+                <label for="chk-${check.id}">${check.label}</label>
+            `;
+            additionalSection.appendChild(div);
+        });
+        checklist.appendChild(additionalSection);
+        updateKitStatusDisplay();
+        showPage('inspectKit');
+    }
+
+    function updateKitCheck(field, isChecked) {
+        if (!currentInspectingKitId) return;
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === currentInspectingKitId);
+        if (kit) {
+            kit.checks[field] = isChecked;
+            const mainChecks = [
+                kit.checks.vestHits,
+                kit.checks.vestWire,
+                kit.checks.vestVibro,
+                kit.checks.vestLaser,
+                kit.checks.vestSound,
+                kit.checks.vestDisplay
+            ];
+            kit.isVestSuitable = mainChecks.every(v => v);
+            updateKitStatusDisplay();
+        }
+    }
+
+    function updateKitStatusDisplay() {
+        if (!currentInspectingKitId) return;
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === currentInspectingKitId);
+        if (kit) {
+            const statusEl = document.getElementById('kitStatus');
+            if (statusEl) {
+                const statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
+                const statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+                statusEl.className = `status ${statusClass}`;
+                statusEl.textContent = statusText;
+            }
+        }
+    }
+
+    function saveInspection() {
+        if (!currentInspectingKitId) {
+            document.getElementById('saveError').textContent = 'Ошибка: комплект не выбран';
+            return;
+        }
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === currentInspectingKitId);
+        if (kit) {
+            kit.lastInspectionDate = new Date().toLocaleDateString('ru-RU');
+            kit.comment = document.getElementById('inspectionComment').value.trim();
+            saveAllBranchKits();
+            loadAllKitsUI();
+            showPage('kits');
+        }
+    }
+
+    // === ИСПРАВЛЕННАЯ ФУНКЦИЯ УДАЛЕНИЯ ===
+    function deleteKit(kitId) {
+        const kits = getCurrentBranchKits();
+        const kitToDelete = kits.find(k => k.id === kitId);
+        if (!kitToDelete) {
+            console.error('Комплект не найден для удаления, ID:', kitId);
+            return;
+        }
+
+        const confirmationMessage = `Удалить комплект: ${kitToDelete.vestColor} ${kitToDelete.blasterId ? `| Бластер: ${kitToDelete.blasterId}` : ''}?`;
+
+        if (confirm(confirmationMessage)) {
+            // Фильтруем массив текущего филиала
+            allBranchKits[currentBranch] = kits.filter(k => k.id !== kitId);
+            saveAllBranchKits();
+            loadAllKitsUI();
+            if (currentInspectingKitId === kitId) {
+                currentInspectingKitId = null;
+                // showPage('kits'); // Не переходим, просто обновляем список
+            }
+        }
+    }
+
+    // === СТРАНИЦА: ПРОСМОТР ИГРОКОВ (DIP) ===
+    function loadAllPlayersUI() {
+        const list = document.getElementById('allPlayersList');
+        list.innerHTML = '';
+
+        for (let playerId = 1; playerId <= 30; playerId++) {
+            const item = document.createElement('li');
+            item.className = 'player-item';
+
+            // Генерируем DIP-настройки (5 бит)
+            const dipBits = [];
+            for (let i = 0; i < 5; i++) {
+                const bitValue = (playerId >> i) & 1;
+                dipBits.push(bitValue ? '+' : '–');
+            }
+
+            // Создаем отображение DIP
+            let dipDisplayHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const label = i + 1;
+                const value = dipBits[i];
+                const valueClass = value === '+' ? 'dip-value-on' : 'dip-value-off';
+                dipDisplayHTML += `<span class="dip-display"><span class="dip-label">Т${label}:</span><span class="${valueClass}">${value}</span></span>`;
+            }
+
+            item.innerHTML = `
+                <div class="player-item-header">
+                    <div class="player-id">Игрок ${playerId}</div>
+                </div>
+                <div class="player-details">
+                    ${dipDisplayHTML}
+                </div>
+            `;
+            list.appendChild(item);
+        }
+    }
+
+    // === ЭКСПОРТ В CSV ===
+    function exportToCSV() {
+        const kits = getCurrentBranchKits();
+        let csv = '';
+        kits.forEach(kit => {
+            const checks = [
+                kit.checks.vestHits ? 'TRUE' : 'FALSE',
+                kit.checks.vestWire ? 'TRUE' : 'FALSE',
+                kit.checks.vestVibro ? 'TRUE' : 'FALSE',
+                kit.checks.vestLaser ? 'TRUE' : 'FALSE',
+                kit.checks.vestSound ? 'TRUE' : 'FALSE',
+                kit.checks.vestDisplay ? 'TRUE' : 'FALSE',
+                kit.checks.vestSideStripes ? 'TRUE' : 'FALSE',
+                kit.checks.vestBodyHalves ? 'TRUE' : 'FALSE',
+                kit.checks.vestScrews ? 'TRUE' : 'FALSE',
+                kit.checks.vestTrigger ? 'TRUE' : 'FALSE',
+                kit.checks.vestSensorCover ? 'TRUE' : 'FALSE',
+                kit.checks.vestNoCracks ? 'TRUE' : 'FALSE',
+                kit.checks.vestStickers ? 'TRUE' : 'FALSE',
+                kit.checks.vestBeltBuckles ? 'TRUE' : 'FALSE'
+            ];
+            const extraData = [
+                kit.lastInspectionDate || '',
+                kit.employee || '',
+                kit.comment || ''
+            ];
+            const fullRow = checks.concat(extraData);
+            csv += fullRow.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+        });
+
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const supportsShare = navigator.share && navigator.canShare && navigator.canShare({ files: [new File([], 'test')] });
+        if (supportsShare) {
+            const file = new File([blob], `cosmozar-export-${currentBranch}.csv`, { type: 'text/csv' });
+            navigator.share({
+                title: 'Экспорт Cosmozar',
+                text: `Данные проверки комплектов (${BRANCH_NAMES[currentBranch]})`,
+                files: [file]
+            }).catch(error => {
+                console.log('Share failed:', error.message);
+                triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
+            });
+        } else {
+            triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
+        }
+    }
+
+    // Вспомогательная функция для создания и "клика" по ссылке скачивания
+    function triggerDownload(blob, filename = 'cosmozar-export.csv') {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            link.style.position = 'fixed';
+            link.style.top = '50%';
+            link.style.left = '50%';
+            link.style.transform = 'translate(-50%, -50%)';
+            link.style.padding = '20px';
+            link.style.fontSize = '18px';
+            link.style.zIndex = '10000';
+            link.style.background = '#0077ff';
+            link.style.color = 'white';
+            link.style.borderRadius = '10px';
+            link.style.textDecoration = 'none';
+            link.textContent = 'Скачать CSV';
+            link.target = '_blank';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '×';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '5px';
+            closeBtn.style.right = '10px';
+            closeBtn.style.background = 'none';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = 'white';
+            closeBtn.style.fontSize = '24px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = function(e) {
+                e.stopPropagation();
+                document.body.removeChild(link);
+            };
+            link.appendChild(closeBtn);
+            document.body.appendChild(link);
+
+            setTimeout(() => {
+                if (document.body.contains(link)) {
+                    document.body.removeChild(link);
+                }
+            }, 10000);
+        } else {
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+
+     // === ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ ===
+    function showPage(pageId) {
+      // Скрываем все страницы
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      // Показываем запрашиваемую
+      const page = document.getElementById(pageId);
+      if (page) {
+        page.classList.add('active');
+      }
+      // Закрываем меню настроек, если оно открыто
+      document.getElementById('settingsMenu').classList.add('hidden');
+    }
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    window.onload = () => {
+        updateBranchDisplays();
+        loadAllKitsUI();
+        loadAllPlayersUI();
+    };
+
+    // Закрытие меню настроек при клике вне его
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('settingsMenu');
+        const settingsBtn = document.querySelector('.btn-settings');
+        if (menu && !menu.classList.contains('hidden') &&
+            !menu.contains(event.target) &&
+            event.target !== settingsBtn) {
+            menu.classList.add('hidden');
+        }
+    });
+  </script>
+</body>
+</html>
