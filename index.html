@@ -168,7 +168,7 @@
         <textarea id="inspectionComment" placeholder="Дополнительная информация о проверке..."></textarea>
       </div>
 
-      <button class="btn btn-green" onclick="saveInspection()">💾 Сохранить проверку</button>
+      <button class="btn btn-green" id="saveInspectionBtn" onclick="saveInspection()">💾 Сохранить проверку</button>
       <div id="saveError" class="error"></div>
     </div>
     <div class="footer">Проверка состояния</div>
@@ -201,6 +201,7 @@
   </div>
 
   <script src="script.js"></script>
+
   <!-- === НАЧАЛО: Онбординг === -->
   <div id="onboardingModal" class="onboarding-modal">
     <div class="onboarding-content">
@@ -236,5 +237,4 @@
   <!-- === КОНЕЦ: Онбординг === -->
 
 </body>
-  </body>
 </html>
