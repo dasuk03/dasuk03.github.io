@@ -7,7 +7,6 @@
   <title>Космозар — Учёт комплектов</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* === НАЧАЛО: Монохромные переменные и темы === */
     :root {
       /* Основные цвета для светлой темы */
       --bg-light: #ffffff; /* Белый фон */
@@ -40,6 +39,8 @@
       --status-bad-text-light: #000000; /* Чёрный текст для Bad в светлой теме */
       --status-na-bg-light: rgba(0, 0, 0, 0.05); /* Светло-серый для NA в светлой теме */
       --status-na-text-light: #666666; /* Серый текст для NA в светлой теме */
+      --status-repair-bg-light: rgba(0, 0, 0, 0.08); /* Средне-серый фон для Repair в светлой теме */
+      --status-repair-text-light: #333333; /* Тёмно-серый текст для Repair в светлой теме */
 
       --status-ok-bg-dark: rgba(255, 255, 255, 0.1); /* Светло-серый фон для OK в тёмной теме */
       --status-ok-text-dark: #ffffff; /* Белый текст для OK в тёмной теме */
@@ -47,6 +48,8 @@
       --status-bad-text-dark: #ffffff; /* Белый текст для Bad в тёмной теме */
       --status-na-bg-dark: rgba(255, 255, 255, 0.05); /* Светло-серый фон для NA в тёмной теме */
       --status-na-text-dark: #999999; /* Серый текст для NA в тёмной теме */
+      --status-repair-bg-dark: rgba(255, 255, 255, 0.08); /* Средне-серый фон для Repair в тёмной теме */
+      --status-repair-text-dark: #cccccc; /* Светло-серый текст для Repair в тёмной теме */
 
       --status-ok-bg: var(--status-ok-bg-light);
       --status-ok-text: var(--status-ok-text-light);
@@ -54,6 +57,8 @@
       --status-bad-text: var(--status-bad-text-light);
       --status-na-bg: var(--status-na-bg-light);
       --status-na-text: var(--status-na-text-light);
+      --status-repair-bg: var(--status-repair-bg-light);
+      --status-repair-text: var(--status-repair-text-light);
 
       /* Кнопки */
       --btn-primary-bg: #000000; /* Чёрный */
@@ -70,6 +75,8 @@
       --btn-delete-text: #ffffff; /* Белый текст */
       --btn-check-bg: #000000; /* Чёрный */
       --btn-check-text: #ffffff; /* Белый текст */
+      --btn-repair-bg: #555555; /* Средне-серый для кнопки ремонта */
+      --btn-repair-text: #ffffff; /* Белый текст для кнопки ремонта */
 
       --safe-area-top: env(safe-area-inset-top, 20px);
       --safe-area-bottom: env(safe-area-inset-bottom, 0px);
@@ -90,8 +97,9 @@
       --status-bad-text: var(--status-bad-text-dark);
       --status-na-bg: var(--status-na-bg-dark);
       --status-na-text: var(--status-na-text-dark);
+      --status-repair-bg: var(--status-repair-bg-dark);
+      --status-repair-text: var(--status-repair-text-dark);
     }
-    /* === КОНЕЦ: Монохромные переменные и темы === */
 
     * {
       box-sizing: border-box;
@@ -147,7 +155,6 @@
       color: var(--btn-primary-text);
       text-align: center;
     }
-    /* === НАЧАЛО: Монохромные стили кнопок === */
     .btn-yellow { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
     .btn-green { background: var(--btn-accent-bg); color: var(--btn-accent-text); }
     .btn-orange { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
@@ -167,10 +174,10 @@
         border-radius: 50%;
         cursor: pointer;
     }
+    .btn-repair { background: var(--btn-repair-bg); color: var(--btn-repair-text); }
     .btn:hover:not(:disabled) {
       opacity: 0.9;
     }
-    /* === КОНЕЦ: Монохромные стили кнопок === */
     /* Скрытие всех страниц по умолчанию */
     .page {
       display: none;
@@ -282,7 +289,7 @@
     .gun { color: var(--text-secondary); } /* Сделаем цвет бластера серым */
     .suit-red { color: var(--text-secondary); } /* Сделаем цвет жилета серым */
     .suit-blue { color: var(--text-secondary); } /* Сделаем цвет жилета серым */
-    .btn-config, .btn-delete, .btn-check {
+    .btn-config, .btn-delete, .btn-check, .btn-repair-kit {
       width: 40px;
       height: 40px;
       border: none;
@@ -297,6 +304,7 @@
     }
     .btn-delete { background: var(--btn-delete-bg); color: var(--btn-delete-text); }
     .btn-check { background: var(--btn-check-bg); color: var(--btn-check-text); }
+    .btn-repair-kit { background: var(--btn-repair-bg); color: var(--btn-repair-text); } /* Кнопка ремонта в списке */
     /* Чек-лист */
     .checklist {
       margin-top: 10px;
@@ -334,6 +342,10 @@
     .status-na {
        background-color: var(--status-na-bg);
        color: var(--status-na-text);
+    }
+    .status-repair {
+       background-color: var(--status-repair-bg);
+       color: var(--status-repair-text);
     }
     .footer {
       text-align: center;
@@ -398,7 +410,7 @@
     .settings-menu .btn:last-child {
         margin-bottom: 0;
     }
-    /* === НАЧАЛО: Стили для сортировки === */
+    /* Стили для сортировки */
     .sort-controls {
         display: flex;
         gap: 10px;
@@ -419,7 +431,47 @@
         color: var(--btn-accent-text);
         border-color: var(--btn-accent-bg);
     }
-    /* === КОНЕЦ: Стили для сортировки === */
+    /* === НАЧАЛО: Стили для страницы ремонта === */
+    .repair-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    .repair-btn {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid var(--border);
+        background: var(--card-bg);
+        color: var(--text);
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: center;
+    }
+    .repair-btn.active {
+        background: var(--btn-accent-bg);
+        color: var(--btn-accent-text);
+        border-color: var(--btn-accent-bg);
+    }
+    .repair-report {
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+    }
+    .repair-comment {
+        margin-top: 10px;
+        padding: 8px;
+        background: var(--card-bg);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        white-space: pre-wrap; /* Сохраняем переносы строк */
+    }
+    .repair-image {
+        margin-top: 10px;
+        max-width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    /* === КОНЕЦ: Стили для страницы ремонта === */
   </style>
 </head>
 <body>
@@ -436,14 +488,14 @@
     </header>
     <div class="content">
       <div class="input-group">
-        <!-- Убран "Основной склад", заменено "ВДНХ" на "Водный Стадион" -->
         <select id="currentBranchSelect" onchange="changeBranch(this.value)">
           <option value="reutov">🏢 Реутов</option>
-          <option value="vdnh">🏢 Водный Стадион</option> <!-- Изменено -->
+          <option value="vdnh">🏢 Водный Стадион</option>
           <option value="rostokino">🏢 Ростокино</option>
         </select>
       </div>
       <button class="btn btn-accent" onclick="showPage('kits')">📋 Просмотр комплектов</button>
+      <button class="btn btn-repair" onclick="showPage('repair')">🔧 Ремонт</button> <!-- НОВАЯ КНОПКА -->
       <button class="btn btn-green" onclick="showPage('addKit')">➕ Добавить комплект</button>
       <button class="btn btn-export-csv" onclick="exportToCSV()">📊 Экспорт в CSV</button>
     </div>
@@ -458,9 +510,8 @@
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
-      <!-- Убран "Основной склад", заменено "ВДНХ" на "Водный Стадион" -->
       <button class="btn btn-yellow" onclick="setBranch('reutov')">🏢 Реутов</button>
-      <button class="btn btn-green" onclick="setBranch('vdnh')">🏢 Водный Стадион</button> <!-- Изменено -->
+      <button class="btn btn-green" onclick="setBranch('vdnh')">🏢 Водный Стадион</button>
       <button class="btn btn-orange" onclick="setBranch('rostokino')">🏢 Ростокино</button>
     </div>
     <div class="footer">Текущий филиал: <span id="currentBranchFooter">Реутов</span></div>
@@ -474,12 +525,10 @@
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
-      <!-- === НАЧАЛО: Элементы управления сортировкой === -->
       <div class="sort-controls">
         <button class="sort-btn" id="sortAscBtn" onclick="setSortOrder('asc')">Сортировать по возрастанию</button>
         <button class="sort-btn" id="sortDescBtn" onclick="setSortOrder('desc')">Сортировать по убыванию</button>
       </div>
-      <!-- === КОНЕЦ: Элементы управления сортировкой === -->
       <div class="kits">
         <div class="kit">
           <div class="kit-header">🛡️ Комплекты</div>
@@ -489,6 +538,29 @@
     </div>
     <div class="footer">Учёт комплектов</div>
   </div>
+
+  <!-- === НАЧАЛО: НОВАЯ СТРАНИЦА: Ремонт === -->
+  <div id="repair" class="page container">
+    <header>
+      <h1>🔧 Ремонт</h1>
+      <div class="subtitle">Комплекты в ремонте (<span id="currentBranchRepair"></span>)</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+      <div class="repair-controls">
+        <button class="repair-btn" id="repairAllBtn" onclick="setRepairFilter('all')">Все</button>
+        <button class="repair-btn" id="repairActiveBtn" onclick="setRepairFilter('active')">В ремонте</button>
+      </div>
+      <div class="kits">
+        <div class="kit">
+          <div class="kit-header">🛡️ Комплекты</div>
+          <ul id="repairKitsList" class="kit-list"></ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer">Учёт ремонта</div>
+  </div>
+  <!-- === КОНЕЦ: НОВАЯ СТРАНИЦА: Ремонт === -->
 
   <!-- Добавление комплекта -->
   <div id="addKit" class="page container">
@@ -569,22 +641,47 @@
     <div class="footer">Проверка состояния</div>
   </div>
 
+  <!-- === НАЧАЛО: НОВАЯ СТРАНИЦА: Отчёт по ремонту === -->
+  <div id="repairReport" class="page container">
+    <header>
+      <h1>📝 Отчёт по ремонту</h1>
+      <div class="subtitle" id="repairReportSubtitle">ID: -</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('repair')">← Назад</button>
+      <div id="repairKitDetails" class="kit-details"></div>
+
+      <div class="input-group full-width">
+        <span class="input-label">Комментарий к ремонту</span>
+        <textarea id="repairComment" placeholder="Опишите проделанную работу..."></textarea>
+      </div>
+
+      <div class="input-group full-width">
+        <span class="input-label">Фото (необязательно)</span>
+        <input type="file" id="repairImageInput" accept="image/*">
+      </div>
+
+      <button class="btn btn-accent" onclick="saveRepairReport()">💾 Сохранить отчёт</button>
+      <div id="repairSaveError" class="error"></div>
+    </div>
+    <div class="footer">Ремонт комплекта</div>
+  </div>
+  <!-- === КОНЕЦ: НОВАЯ СТРАНИЦА: Отчёт по ремонту === -->
+
   <script>
     // === УПРАВЛЕНИЕ ФИЛИАЛАМИ ===
-    // Убран "default", заменено "vdnh" на "Водный Стадион"
     const BRANCHES = ['reutov', 'vdnh', 'rostokino'];
     const BRANCH_NAMES = {
         'reutov': 'Реутов',
-        'vdnh': 'Водный Стадион', // Изменено
+        'vdnh': 'Водный Стадион',
         'rostokino': 'Ростокино'
     };
 
-    // Получаем текущий филиал из localStorage или устанавливаем по умолчанию (первый в списке)
     let currentBranch = localStorage.getItem('cosmozar-current-branch') || BRANCHES[0];
 
-    // === НАЧАЛО: Управление темой ===
+    // === УПРАВЛЕНИЕ ТЕМОЙ ===
     const THEME_STORAGE_KEY = 'cosmozar-theme';
-    let currentTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light'; // По умолчанию светлая
+    let currentTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
 
     function applyTheme(theme) {
         if (theme === 'dark') {
@@ -600,20 +697,21 @@
         applyTheme(currentTheme);
     }
 
-    // Применяем тему при загрузке
     applyTheme(currentTheme);
-    // === КОНЕЦ: Управление темой ===
 
-    // === НАЧАЛО: Управление сортировкой ===
+    // === УПРАВЛЕНИЕ СОРТИРОВКОЙ ===
     const SORT_STORAGE_KEY = 'cosmozar-sort-order';
-    let currentSortOrder = localStorage.getItem(SORT_STORAGE_KEY) || 'asc'; // По умолчанию по возрастанию
+    let currentSortOrder = localStorage.getItem(SORT_STORAGE_KEY) || 'asc';
 
     function setSortOrder(order) {
         if (order === 'asc' || order === 'desc') {
             currentSortOrder = order;
             localStorage.setItem(SORT_STORAGE_KEY, currentSortOrder);
             updateSortButtonUI();
-            loadAllKitsUI(); // Перезагружаем список с новой сортировкой
+            loadAllKitsUI(); // Перезагружаем основной список
+            if (currentRepairFilter === 'active') {
+                 loadRepairKitsUI(); // Перезагружаем список ремонта, если показаны "в ремонте"
+            }
         }
     }
 
@@ -621,7 +719,24 @@
         document.getElementById('sortAscBtn').classList.toggle('active', currentSortOrder === 'asc');
         document.getElementById('sortDescBtn').classList.toggle('active', currentSortOrder === 'desc');
     }
-    // === КОНЕЦ: Управление сортировкой ===
+
+    // === УПРАВЛЕНИЕ РЕМОНТОМ ===
+    const REPAIR_FILTER_STORAGE_KEY = 'cosmozar-repair-filter';
+    let currentRepairFilter = localStorage.getItem(REPAIR_FILTER_STORAGE_KEY) || 'active'; // По умолчанию показываем "в ремонте"
+
+    function setRepairFilter(filter) {
+        if (filter === 'all' || filter === 'active') {
+            currentRepairFilter = filter;
+            localStorage.setItem(REPAIR_FILTER_STORAGE_KEY, currentRepairFilter);
+            updateRepairButtonUI();
+            loadRepairKitsUI();
+        }
+    }
+
+    function updateRepairButtonUI() {
+        document.getElementById('repairAllBtn').classList.toggle('active', currentRepairFilter === 'all');
+        document.getElementById('repairActiveBtn').classList.toggle('active', currentRepairFilter === 'active');
+    }
 
     // Функция для переключения меню настроек
     function toggleSettingsMenu() {
@@ -635,7 +750,8 @@
             currentBranch = branchId;
             localStorage.setItem('cosmozar-current-branch', currentBranch);
             updateBranchDisplays();
-            loadAllKitsUI(); // Перезагружаем список для нового филиала
+            loadAllKitsUI();
+            loadRepairKitsUI(); // Обновляем список ремонта
         }
     }
 
@@ -652,40 +768,33 @@
     // Обновление отображения текущего филиала
     function updateBranchDisplays() {
         const branchName = BRANCH_NAMES[currentBranch];
-        // Обновляем текст в select на главной
         document.getElementById('currentBranchSelect').value = currentBranch;
-        // Обновляем футер на странице выбора филиала
         document.getElementById('currentBranchFooter').textContent = branchName;
-        // Обновляем заголовки на других страницах
         document.getElementById('currentBranchKits').textContent = branchName;
         document.getElementById('currentBranchAdd').textContent = branchName;
+        document.getElementById('currentBranchRepair').textContent = branchName; // Для страницы ремонта
     }
 
     // === МОДЕЛЬ ДАННЫХ С ФИЛИАЛАМИ ===
-    // Ключ для хранения данных по филиалам
     const KITS_STORAGE_KEY = 'cosmozar-kits-by-branch-v3_2';
 
-    // Загружаем все данные из localStorage
     let allBranchKits = JSON.parse(localStorage.getItem(KITS_STORAGE_KEY)) || {};
 
-    // Инициализируем данные для каждого филиала, если их нет
     BRANCHES.forEach(branch => {
         if (!allBranchKits[branch]) {
             allBranchKits[branch] = [];
         }
     });
 
-    // Получаем комплекты для текущего филиала
     function getCurrentBranchKits() {
         return allBranchKits[currentBranch] || [];
     }
 
-    // Сохраняем все данные
     function saveAllBranchKits() {
         localStorage.setItem(KITS_STORAGE_KEY, JSON.stringify(allBranchKits));
     }
 
-    // Структура комплекта (без ID жилета)
+    // Структура комплекта (добавлено поле repair)
     function createKitSkeleton(vestColor, blasterId = null, employee = '', comment = '') {
         const now = new Date().toLocaleDateString('ru-RU');
         return {
@@ -713,7 +822,15 @@
             batteryType: "Li-ion",
             lastInspectionDate: now,
             employee: employee,
-            comment: comment
+            comment: comment,
+            // === НОВОЕ: Поле для ремонта ===
+            repair: {
+                active: false,
+                comment: '',
+                image: null, // Будет хранить Data URL изображения
+                lastRepairDate: null
+            }
+            // === КОНЕЦ: НОВОЕ ===
         };
     }
 
@@ -724,9 +841,8 @@
     // === СТРАНИЦА: ПРОСМОТР КОМПЛЕКТОВ ===
     function loadAllKitsUI() {
         const kits = getCurrentBranchKits();
-        // === НАЧАЛО: Сортировка ===
         kits.sort((a, b) => {
-            const idA = a.blasterId !== null ? a.blasterId : Infinity; // Помещаем null в конец
+            const idA = a.blasterId !== null ? a.blasterId : Infinity;
             const idB = b.blasterId !== null ? b.blasterId : Infinity;
             if (currentSortOrder === 'asc') {
                 return idA - idB;
@@ -734,7 +850,6 @@
                 return idB - idA;
             }
         });
-        // === КОНЕЦ: Сортировка ===
         const list = document.getElementById('allKitsList');
         list.innerHTML = '';
         if (kits.length === 0) {
@@ -744,11 +859,17 @@
         kits.forEach(kit => {
             const item = document.createElement('li');
             item.className = 'kit-item';
-            const statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
-            const statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+
+            let statusClass, statusText;
+            if (kit.repair.active) {
+                statusClass = 'status-repair';
+                statusText = '🔧 В ремонте';
+            } else {
+                statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
+                statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+            }
 
             const vestColorEmoji = kit.vestColor === 'Красный' ? '🔴' : '🔵';
-            // const vestColorClass = kit.vestColor === 'Красный' ? 'suit-red' : 'suit-blue'; // Убран цвет
 
             item.innerHTML = `
                 <div class="kit-item-header">
@@ -758,6 +879,9 @@
                     </div>
                     <div style="display:flex; gap: 8px;">
                         <button class="btn-check" onclick="inspectKit('${kit.id}')">🔧</button>
+                        <!-- === НОВАЯ КНОПКА: Переключение статуса ремонта === -->
+                        <button class="btn-repair-kit" onclick="toggleRepairStatus('${kit.id}')">${kit.repair.active ? '✅' : '🔧'}</button>
+                        <!-- === КОНЕЦ: НОВАЯ КНОПКА === -->
                         <button class="btn-delete" onclick="deleteKit('${kit.id}')">✕</button>
                     </div>
                 </div>
@@ -771,6 +895,152 @@
         });
     }
 
+    // === ФУНКЦИЯ: Переключение статуса ремонта ===
+    function toggleRepairStatus(kitId) {
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === kitId);
+        if (kit) {
+            kit.repair.active = !kit.repair.active;
+            if (kit.repair.active) {
+                // Если статус включён, сбрасываем дату последнего ремонта
+                kit.repair.lastRepairDate = null;
+            }
+            saveAllBranchKits();
+            loadAllKitsUI(); // Обновляем основной список
+            if (currentRepairFilter === 'active') {
+                 loadRepairKitsUI(); // Обновляем список ремонта, если показаны "в ремонте"
+            }
+        }
+    }
+
+
+    // === СТРАНИЦА: РЕМОНТ ===
+    function loadRepairKitsUI() {
+        const kits = getCurrentBranchKits();
+        // Фильтруем по статусу ремонта
+        let filteredKits = kits;
+        if (currentRepairFilter === 'active') {
+            filteredKits = kits.filter(kit => kit.repair.active);
+        }
+
+        // Сортируем по blasterId
+        filteredKits.sort((a, b) => {
+            const idA = a.blasterId !== null ? a.blasterId : Infinity;
+            const idB = b.blasterId !== null ? b.blasterId : Infinity;
+            if (currentSortOrder === 'asc') {
+                return idA - idB;
+            } else {
+                return idB - idA;
+            }
+        });
+
+        const list = document.getElementById('repairKitsList');
+        list.innerHTML = '';
+        if (filteredKits.length === 0) {
+            list.innerHTML = '<li class="kit-item" style="text-align:center;">Нет комплектов</li>';
+            return;
+        }
+        filteredKits.forEach(kit => {
+            const item = document.createElement('li');
+            item.className = 'kit-item';
+
+            // Статус "в ремонте"
+            const statusClass = 'status-repair';
+            const statusText = '🔧 В ремонте';
+
+            const vestColorEmoji = kit.vestColor === 'Красный' ? '🔴' : '🔵';
+
+            item.innerHTML = `
+                <div class="kit-item-header">
+                    <div class="kit-id">
+                        <span>${vestColorEmoji}</span>
+                        ${kit.vestColor} ${kit.blasterId !== null ? `| Бластер: ${kit.blasterId}` : ''}
+                    </div>
+                    <div style="display:flex; gap: 8px;">
+                        <button class="btn-repair" onclick="reportRepair('${kit.id}')">📝</button>
+                    </div>
+                </div>
+                <div class="kit-details">
+                    Дата: ${kit.lastInspectionDate} | Сотрудник: ${kit.employee || '-'}
+                    ${kit.comment ? `<br>Комментарий: ${kit.comment}` : ''}
+                </div>
+                <div class="status ${statusClass}">${statusText}</div>
+                <!-- === ОТЧЁТ ПО РЕМОНТУ === -->
+                ${kit.repair.lastRepairDate ? `<div class="repair-report">
+                    <div class="additional-title">Отчёт о ремонте:</div>
+                    <div class="kit-details">
+                        Дата: ${kit.repair.lastRepairDate}
+                        ${kit.repair.comment ? `<div class="repair-comment">${kit.repair.comment}</div>` : ''}
+                        ${kit.repair.image ? `<img src="${kit.repair.image}" alt="Фото после ремонта" class="repair-image">` : ''}
+                    </div>
+                </div>` : ''}
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    // === СТРАНИЦА: ОТЧЁТ ПО РЕМОНТУ ===
+    let currentRepairingKitId = null;
+
+    function reportRepair(kitId) {
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === kitId);
+        if (!kit) {
+            alert('Комплект не найден');
+            showPage('repair');
+            return;
+        }
+        currentRepairingKitId = kitId;
+        document.getElementById('repairReportSubtitle').textContent = `${kit.vestColor} ${kit.blasterId !== null ? `| Бластер: ${kit.blasterId}` : ''}`;
+        document.getElementById('repairKitDetails').innerHTML = `
+            Цвет: ${kit.vestColor} | Дата последней проверки: ${kit.lastInspectionDate} | Сотрудник: ${kit.employee || '-'}
+            ${kit.comment ? `<br>Комментарий: ${kit.comment}` : ''}
+        `;
+        document.getElementById('repairComment').value = kit.repair.comment || '';
+        document.getElementById('repairImageInput').value = ''; // Сбрасываем файл
+
+        showPage('repairReport');
+    }
+
+    function saveRepairReport() {
+        if (!currentRepairingKitId) {
+            document.getElementById('repairSaveError').textContent = 'Ошибка: комплект не выбран';
+            return;
+        }
+        const kits = getCurrentBranchKits();
+        const kit = kits.find(k => k.id === currentRepairingKitId);
+        if (kit) {
+            kit.repair.comment = document.getElementById('repairComment').value.trim();
+            kit.repair.lastRepairDate = new Date().toLocaleDateString('ru-RU');
+
+            // Обработка изображения
+            const fileInput = document.getElementById('repairImageInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    kit.repair.image = e.target.result; // Сохраняем Data URL
+                    finalizeRepairSave(kit);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Если фото нет, просто сохраняем текст
+                kit.repair.image = null;
+                finalizeRepairSave(kit);
+            }
+        }
+    }
+
+    function finalizeRepairSave(kit) {
+        // Сбрасываем статус ремонта
+        kit.repair.active = false;
+        saveAllBranchKits();
+        loadRepairKitsUI(); // Обновляем список ремонта
+        loadAllKitsUI(); // Обновляем основной список
+        showPage('repair'); // Возвращаемся на страницу ремонта
+    }
+
+
     // === СТРАНИЦА: ДОБАВЛЕНИЕ КОМПЛЕКТА ===
     function createNewKit() {
         const vestColor = document.getElementById('newVestColor').value;
@@ -782,7 +1052,6 @@
 
         const newKit = createKitSkeleton(vestColor, blasterId, employee, comment);
 
-        // Добавляем в массив текущего филиала
         allBranchKits[currentBranch].push(newKit);
         saveAllBranchKits();
 
@@ -885,8 +1154,15 @@
         if (kit) {
             const statusEl = document.getElementById('kitStatus');
             if (statusEl) {
-                const statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
-                const statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+                // Обновляем статус в зависимости от ремонта
+                let statusClass, statusText;
+                if (kit.repair.active) {
+                    statusClass = 'status-repair';
+                    statusText = '🔧 В ремонте';
+                } else {
+                    statusClass = kit.isVestSuitable ? 'status-ok' : 'status-bad';
+                    statusText = kit.isVestSuitable ? '✅ Пригоден' : '❌ Не пригоден';
+                }
                 statusEl.className = `status ${statusClass}`;
                 statusEl.textContent = statusText;
             }
@@ -921,13 +1197,15 @@
         const confirmationMessage = `Удалить комплект: ${kitToDelete.vestColor} ${kitToDelete.blasterId !== null ? `| Бластер: ${kitToDelete.blasterId}` : ''}?`;
 
         if (confirm(confirmationMessage)) {
-            // Фильтруем массив текущего филиала
             allBranchKits[currentBranch] = kits.filter(k => k.id !== kitId);
             saveAllBranchKits();
             loadAllKitsUI();
+            loadRepairKitsUI(); // Обновляем список ремонта
             if (currentInspectingKitId === kitId) {
                 currentInspectingKitId = null;
-                // showPage('kits'); // Не переходим, просто обновляем список
+            }
+            if (currentRepairingKitId === kitId) {
+                currentRepairingKitId = null;
             }
         }
     }
@@ -941,14 +1219,12 @@
             const item = document.createElement('li');
             item.className = 'player-item';
 
-            // Генерируем DIP-настройки (5 бит)
             const dipBits = [];
             for (let i = 0; i < 5; i++) {
                 const bitValue = (playerId >> i) & 1;
                 dipBits.push(bitValue ? '+' : '–');
             }
 
-            // Создаем отображение DIP
             let dipDisplayHTML = '';
             for (let i = 0; i < 5; i++) {
                 const label = i + 1;
@@ -993,7 +1269,10 @@
             const extraData = [
                 kit.lastInspectionDate || '',
                 kit.employee || '',
-                kit.comment || ''
+                kit.comment || '',
+                kit.repair.active ? 'В ремонте' : 'Не в ремонте', // Добавляем статус ремонта в CSV
+                kit.repair.comment || '', // Добавляем комментарий ремонта
+                kit.repair.lastRepairDate || '' // Добавляем дату последнего ремонта
             ];
             const fullRow = checks.concat(extraData);
             csv += fullRow.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
@@ -1070,24 +1349,21 @@
 
      // === ГЛОБАЛЬНАЯ ФУНКЦИЯ НАВИГАЦИИ ===
     function showPage(pageId) {
-      // Скрываем все страницы
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      // Показываем запрашиваемую
       const page = document.getElementById(pageId);
       if (page) {
         page.classList.add('active');
       }
-      // Закрываем меню настроек, если оно открыто
       document.getElementById('settingsMenu').classList.add('hidden');
     }
 
     // === ИНИЦИАЛИЗАЦИЯ ===
     window.onload = () => {
         updateBranchDisplays();
-        // === НАЧАЛО: Инициализация сортировки UI ===
         updateSortButtonUI();
-        // === КОНЕЦ: Инициализация сортировки UI ===
+        updateRepairButtonUI(); // Инициализация UI для фильтрации ремонта
         loadAllKitsUI();
+        loadRepairKitsUI(); // Загрузка списка ремонта
         loadAllPlayersUI();
     };
 
