@@ -693,4 +693,62 @@ function setBranch(branchId) {
         updateBranchDisplays();
         showPage('home');
     }
+
 }
+
+// === НАЧАЛО: Логика онбординга ===
+const ONBOARDING_STORAGE_KEY = 'cosmozar-onboarding-completed';
+const onboardingModal = document.getElementById('onboardingModal');
+const onboardingSteps = document.querySelectorAll('.onboarding-step');
+let currentStepIndex = 0;
+
+function showOnboarding() {
+    const hasCompletedOnboarding = localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'true';
+    if (!hasCompletedOnboarding) {
+        onboardingModal.classList.add('active');
+        showStep(currentStepIndex);
+    }
+}
+
+function showStep(index) {
+    onboardingSteps.forEach((step, i) => {
+        step.classList.toggle('active', i === index);
+    });
+}
+
+function nextStep() {
+    if (currentStepIndex < onboardingSteps.length - 1) {
+        currentStepIndex++;
+        showStep(currentStepIndex);
+    }
+}
+
+function prevStep() {
+    if (currentStepIndex > 0) {
+        currentStepIndex--;
+        showStep(currentStepIndex);
+    }
+}
+
+function finishOnboarding() {
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+    onboardingModal.classList.remove('active');
+    currentStepIndex = 0; // Сброс индекса для возможного повторного запуска (например, через настройки)
+}
+
+// Назначение обработчиков событий
+document.getElementById('nextToStep2').addEventListener('click', nextStep);
+document.getElementById('prevFromStep2').addEventListener('click', prevStep);
+document.getElementById('nextToStep3').addEventListener('click', nextStep);
+document.getElementById('prevFromStep3').addEventListener('click', prevStep);
+document.getElementById('nextToStep4').addEventListener('click', nextStep);
+document.getElementById('prevFromStep4').addEventListener('click', prevStep);
+document.getElementById('finishOnboarding').addEventListener('click', finishOnboarding);
+
+// Запуск онбординга после инициализации приложения
+document.addEventListener('DOMContentLoaded', function() {
+    // Ждём, пока DOM будет полностью загружен
+    // Вызов showOnboarding происходит после выполнения initializeApp
+    setTimeout(showOnboarding, 100); // Небольшая задержка, чтобы UI успел отрисоваться
+});
+// === КОНЕЦ: Логика онбординга ===
