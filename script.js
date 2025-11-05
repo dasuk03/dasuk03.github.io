@@ -693,7 +693,6 @@ function setBranch(branchId) {
         updateBranchDisplays();
         showPage('home');
     }
-
 }
 
 // === НАЧАЛО: Логика онбординга ===
