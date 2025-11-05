@@ -201,5 +201,40 @@
   </div>
 
   <script src="script.js"></script>
+  <!-- === НАЧАЛО: Онбординг === -->
+  <div id="onboardingModal" class="onboarding-modal">
+    <div class="onboarding-content">
+      <div id="onboardingStep1" class="onboarding-step active">
+        <h2>Добро пожаловать в Космозар!</h2>
+        <p>Это приложение поможет вам управлять лазертаг-оборудованием.</p>
+        <p>Давайте быстро пройдёмся по основным функциям.</p>
+        <button id="nextToStep2" class="btn btn-accent">Далее</button>
+      </div>
+      <div id="onboardingStep2" class="onboarding-step">
+        <h2>Выбор филиала</h2>
+        <p>Сначала выберите филиал, с которым будете работать.</p>
+        <img src="https://via.placeholder.com/200x100?text=Филиал" alt="Выбор филиала">
+        <button id="prevFromStep2" class="btn btn-secondary-bg">Назад</button>
+        <button id="nextToStep3" class="btn btn-accent">Далее</button>
+      </div>
+      <div id="onboardingStep3" class="onboarding-step">
+        <h2>Проверка комплектов</h2>
+        <p>Здесь вы можете просматривать, добавлять и проверять комплекты.</p>
+        <img src="https://via.placeholder.com/200x100?text=Проверка" alt="Проверка комплекта">
+        <button id="prevFromStep3" class="btn btn-secondary-bg">Назад</button>
+        <button id="nextToStep4" class="btn btn-accent">Далее</button>
+      </div>
+      <div id="onboardingStep4" class="onboarding-step">
+        <h2>Ремонт</h2>
+        <p>Отметьте комплект как "в ремонте" и добавьте отчёт о проделанной работе.</p>
+        <img src="https://via.placeholder.com/200x100?text=Ремонт" alt="Ремонт">
+        <button id="prevFromStep4" class="btn btn-secondary-bg">Назад</button>
+        <button id="finishOnboarding" class="btn btn-green">Завершить</button>
+      </div>
+    </div>
+  </div>
+  <!-- === КОНЕЦ: Онбординг === -->
+
 </body>
+  </body>
 </html>
