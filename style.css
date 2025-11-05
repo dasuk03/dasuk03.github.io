@@ -516,7 +516,7 @@ h1 {
 .onboarding-modal {
     display: none; /* Скрыто по умолчанию */
     position: fixed;
-    z-index: 2000;
+    z-index: 1000; /* Уменьшено с 2000 */
     left: 0;
     top: 0;
     width: 100%;
@@ -570,3 +570,4 @@ h1 {
     width: auto; /* Кнопки не на всю ширину */
 }
 /* === КОНЕЦ: Стили для онбординга === */
+
