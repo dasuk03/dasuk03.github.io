@@ -176,6 +176,7 @@ h1 {
 .btn:hover:not(:disabled) {
   opacity: 0.9;
 }
+.btn-secondary-bg { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
 
 .page {
   display: none;
@@ -509,7 +510,6 @@ h1 {
     max-width: 100%;
     border-radius: 8px;
     border: 1px solid var(--border);
-
 }
 
 /* === НАЧАЛО: Стили для онбординга === */
@@ -570,4 +570,3 @@ h1 {
     width: auto; /* Кнопки не на всю ширину */
 }
 /* === КОНЕЦ: Стили для онбординга === */
-
