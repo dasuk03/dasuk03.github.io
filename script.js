@@ -517,7 +517,6 @@ function loadAllPlayersUI() {
     }
 }
 
-// === Исправленный экспорт в CSV (с заголовком и надёжным fallback) ===
 function exportToCSV() {
     const kits = getCurrentBranchKits();
     if (!kits || kits.length === 0) {
@@ -525,7 +524,6 @@ function exportToCSV() {
         return;
     }
 
-    // Заголовок CSV (подстраивай под нужные поля)
     const header = [
         'vestHits','vestWire','vestVibro','vestLaser','vestSound','vestDisplay',
         'vestSideStripes','vestBodyHalves','vestScrews','vestTrigger','vestSensorCover',
@@ -536,31 +534,25 @@ function exportToCSV() {
     csv += kits.map(kit => kitToCsvRow(kit)).join('');
 
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
 
-    // Попробуем Shared Files если доступно и поддерживается
-    try {
-        if (navigator.share && navigator.canShare) {
-            const file = new File([blob], `cosmozar-export-${currentBranch}.csv`, { type: 'text/csv' });
-            if (navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    title: 'Экспорт Cosmozar',
-                    text: `Данные проверки комплектов (${BRANCH_NAMES[currentBranch]})`,
-                    files: [file]
-                }).catch(err => {
-                    console.warn('Share failed, fallback to download:', err);
-                    triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
-                });
-                return;
-            }
-        }
-    } catch (e) {
-        // Защищаемся от браузеров, где canShare бросает ошибку
-        console.warn('Share check error, fallback to download', e);
+    // Для iPhone Safari — открыть CSV в новой вкладке
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+        return;
     }
 
-    // fallback: обычная загрузка
-    triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
+    // Для остальных браузеров — обычное скачивание
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `cosmozar-export-${currentBranch}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
+
 
 function triggerDownload(blob, filename = 'cosmozar-export.csv') {
     const url = URL.createObjectURL(blob);
