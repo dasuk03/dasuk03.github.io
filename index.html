@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <script src="https://telegram.org/js/telegram-web-app.js "></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
   <title>Космозар — Учёт комплектов</title>
@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Главная: выбор действия -->
+
+  <!-- Главная -->
   <div id="home" class="page active container">
     <header>
       <h1>🎯 Космозар</h1>
@@ -17,7 +18,7 @@
       <button class="btn btn-settings" onclick="toggleSettingsMenu()">⚙️</button>
       <div id="settingsMenu" class="settings-menu hidden">
         <button class="btn btn-orange" onclick="showPage('players'); toggleSettingsMenu();">👥 Игроки (DIP)</button>
-        <button class="btn btn-accent" onclick="toggleTheme(); toggleSettingsMenu();">🌙/☀️ Переключить тему</button>
+        <button class="btn btn-accent" onclick="toggleTheme(); toggleSettingsMenu();">🌙/☀️ Тема</button>
       </div>
     </header>
     <div class="content">
@@ -33,36 +34,28 @@
       <button class="btn btn-green" onclick="showPage('addKit')">➕ Добавить комплект</button>
       <button class="btn btn-export-csv" onclick="exportToCSV()">📊 Экспорт в CSV</button>
     </div>
-    <div class="footer">Система учёта • v3.2</div>
-  </div>
-
-  <!-- Выбор филиала -->
-  <div id="branchSelect" class="page container">
-    <header>
-      <h1>🏢 Выбор филиала</h1>
-      <div class="subtitle">Выберите активный филиал</div>
-    </header>
-    <div class="content">
-      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
-      <button class="btn btn-yellow" onclick="setBranch('reutov')">🏢 Реутов</button>
-      <button class="btn btn-green" onclick="setBranch('vdnh')">🏢 Водный Стадион</button>
-      <button class="btn btn-orange" onclick="setBranch('rostokino')">🏢 Ростокино</button>
-    </div>
-    <div class="footer">Текущий филиал: <span id="currentBranchFooter">Реутов</span></div>
+    <div class="footer">Система учёта • v3.3</div>
   </div>
 
   <!-- Просмотр комплектов -->
   <div id="kits" class="page container">
     <header>
       <h1>📋 Комплекты</h1>
-      <div class="subtitle">Список всех комплектов (<span id="currentBranchKits"></span>)</div>
+      <div class="subtitle">(счётчик обновится ниже)</div>
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+
       <div class="sort-controls">
-        <button class="sort-btn" id="sortAscBtn" onclick="setSortOrder('asc')">Сортировать по возрастанию</button>
-        <button class="sort-btn" id="sortDescBtn" onclick="setSortOrder('desc')">Сортировать по убыванию</button>
+        <button class="sort-btn" id="sortAscBtn" onclick="setSortOrder('asc')">⬆️ по возрастанию</button>
+        <button class="sort-btn" id="sortDescBtn" onclick="setSortOrder('desc')">⬇️ по убыванию</button>
       </div>
+
+      <div class="sort-controls">
+        <button class="sort-btn" onclick="setSortColor('blueFirst')">🔵 сначала</button>
+        <button class="sort-btn" onclick="setSortColor('redFirst')">🔴 сначала</button>
+      </div>
+
       <div class="kits">
         <div class="kit">
           <div class="kit-header">🛡️ Комплекты</div>
@@ -81,10 +74,12 @@
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+
       <div class="repair-controls">
         <button class="repair-btn" id="repairAllBtn" onclick="setRepairFilter('all')">Все</button>
         <button class="repair-btn" id="repairActiveBtn" onclick="setRepairFilter('active')">В ремонте</button>
       </div>
+
       <div class="kits">
         <div class="kit">
           <div class="kit-header">🛡️ Комплекты</div>
@@ -99,7 +94,7 @@
   <div id="addKit" class="page container">
     <header>
       <h1>➕ Добавить комплект</h1>
-      <div class="subtitle">Введите данные (<span id="currentBranchAdd"></span>)</div>
+      <div class="subtitle"><span id="currentBranchAdd"></span></div>
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
@@ -112,7 +107,7 @@
       </div>
 
       <div class="input-group">
-        <input type="number" id="newBlasterID" min="1" max="99" placeholder="Бластер ID" inputmode="numeric">
+        <input type="number" id="newBlasterID" min="1" max="99" placeholder="Бластер ID">
       </div>
 
       <div class="input-group full-width">
@@ -122,31 +117,12 @@
 
       <div class="input-group full-width">
         <span class="input-label">Комментарий</span>
-        <textarea id="kitComment" placeholder="Дополнительная информация..."></textarea>
+        <textarea id="kitComment"></textarea>
       </div>
 
       <button class="btn btn-accent" onclick="createNewKit()">Создать и проверить</button>
       <div id="addError" class="error"></div>
     </div>
-    <div class="footer">Добавление нового комплекта</div>
-  </div>
-
-  <!-- Просмотр игроков (DIP) -->
-  <div id="players" class="page container">
-    <header>
-      <h1>👥 Игроки</h1>
-      <div class="subtitle">Настройки DIP-переключателей</div>
-    </header>
-    <div class="content">
-      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
-      <div class="players">
-        <div class="player">
-          <div class="player-header">🎚️ Настройки DIP</div>
-          <ul id="allPlayersList" class="player-list"></ul>
-        </div>
-      </div>
-    </div>
-    <div class="footer">Игроки 1-30</div>
   </div>
 
   <!-- Проверка комплекта -->
@@ -157,84 +133,59 @@
     </header>
     <div class="content">
       <button class="btn back-btn" onclick="showPage('kits')">← Назад</button>
+
       <div id="inspectKitDetails" class="kit-details"></div>
-      <div class="checklist" id="inspectionChecklist">
-        <!-- Чекбоксы будут добавлены здесь динамически -->
-      </div>
+      <div id="inspectionChecklist" class="checklist"></div>
       <div id="kitStatus" class="status status-na">Статус: Не проверено</div>
 
-      <div class="input-group full-width" style="margin-top: 20px;">
+      <div class="input-group full-width" style="margin-top:20px;">
         <span class="input-label">Комментарий</span>
-        <textarea id="inspectionComment" placeholder="Дополнительная информация о проверке..."></textarea>
+        <textarea id="inspectionComment"></textarea>
       </div>
 
-      <button class="btn btn-green" id="saveInspectionBtn" onclick="saveInspection()">💾 Сохранить проверку</button>
-      <div id="saveError" class="error"></div>
+      <button class="btn btn-green" onclick="saveInspection()">💾 Сохранить</button>
     </div>
-    <div class="footer">Проверка состояния</div>
   </div>
 
-  <!-- Отчёт по ремонту -->
+  <!-- Отчёт ремонта -->
   <div id="repairReport" class="page container">
     <header>
-      <h1>📝 Отчёт по ремонту</h1>
+      <h1>📝 Отчёт ремонта</h1>
       <div class="subtitle" id="repairReportSubtitle">ID: -</div>
     </header>
+
     <div class="content">
       <button class="btn back-btn" onclick="showPage('repair')">← Назад</button>
+
       <div id="repairKitDetails" class="kit-details"></div>
 
       <div class="input-group full-width">
-        <span class="input-label">Комментарий к ремонту</span>
-        <textarea id="repairComment" placeholder="Опишите проделанную работу..."></textarea>
+        <span class="input-label">Комментарий</span>
+        <textarea id="repairComment"></textarea>
       </div>
 
       <div class="input-group full-width">
-        <span class="input-label">Фото (необязательно)</span>
-        <input type="file" id="repairImageInput" accept="image/*">
+        <span class="input-label">Фото</span>
+        <input type="file" id="repairImageInput" accept="image/*" multiple>
       </div>
 
       <button class="btn btn-accent" onclick="saveRepairReport()">💾 Сохранить отчёт</button>
       <div id="repairSaveError" class="error"></div>
     </div>
-    <div class="footer">Ремонт комплекта</div>
   </div>
 
-  <script src="script.js"></script>
-
-  <!-- === НАЧАЛО: Онбординг === -->
-  <div id="onboardingModal" class="onboarding-modal">
-    <div class="onboarding-content">
-      <div id="onboardingStep1" class="onboarding-step active">
-        <h2>Добро пожаловать в Космозар!</h2>
-        <p>Это приложение поможет вам управлять лазертаг-оборудованием.</p>
-        <p>Давайте быстро пройдёмся по основным функциям.</p>
-        <button id="nextToStep2" class="btn btn-accent">Далее</button>
-      </div>
-      <div id="onboardingStep2" class="onboarding-step">
-        <h2>Выбор филиала</h2>
-        <p>Сначала выберите филиал, с которым будете работать.</p>
-        <img src="https://via.placeholder.com/200x100?text=Филиал" alt="Выбор филиала">
-        <button id="prevFromStep2" class="btn btn-secondary-bg">Назад</button>
-        <button id="nextToStep3" class="btn btn-accent">Далее</button>
-      </div>
-      <div id="onboardingStep3" class="onboarding-step">
-        <h2>Проверка комплектов</h2>
-        <p>Здесь вы можете просматривать, добавлять и проверять комплекты.</p>
-        <img src="https://via.placeholder.com/200x100?text=Проверка" alt="Проверка комплекта">
-        <button id="prevFromStep3" class="btn btn-secondary-bg">Назад</button>
-        <button id="nextToStep4" class="btn btn-accent">Далее</button>
-      </div>
-      <div id="onboardingStep4" class="onboarding-step">
-        <h2>Ремонт</h2>
-        <p>Отметьте комплект как "в ремонте" и добавьте отчёт о проделанной работе.</p>
-        <img src="https://via.placeholder.com/200x100?text=Ремонт" alt="Ремонт">
-        <button id="prevFromStep4" class="btn btn-secondary-bg">Назад</button>
-        <button id="finishOnboarding" class="btn btn-green">Завершить</button>
-      </div>
+  <!-- Игроки -->
+  <div id="players" class="page container">
+    <header>
+      <h1>👥 Игроки</h1>
+      <div class="subtitle">Настройка DIP</div>
+    </header>
+    <div class="content">
+      <button class="btn back-btn" onclick="showPage('home')">← Назад</button>
+      <ul id="allPlayersList" class="player-list"></ul>
     </div>
   </div>
-  <!-- === КОНЕЦ: Онбординг === -->
 
+<script src="script.js"></script>
 </body>
 </html>
