@@ -517,9 +517,81 @@ function loadAllPlayersUI() {
     }
 }
 
-// === CSV ===
-// оставлено без изменений
-// ...
+// === Исправленный экспорт в CSV (с заголовком и надёжным fallback) ===
+function exportToCSV() {
+    const kits = getCurrentBranchKits();
+    if (!kits || kits.length === 0) {
+        alert('Нет данных для экспорта');
+        return;
+    }
+
+    // Заголовок CSV (подстраивай под нужные поля)
+    const header = [
+        'vestHits','vestWire','vestVibro','vestLaser','vestSound','vestDisplay',
+        'vestSideStripes','vestBodyHalves','vestScrews','vestTrigger','vestSensorCover',
+        'vestNoCracks','vestStickers','vestBeltBuckles',
+        'lastInspectionDate','employee','comment','repairStatus','repairComment','lastRepairDate','repairImagesCount'
+    ];
+    let csv = header.map(h => `"${h.replace(/"/g,'""')}"`).join(',') + '\n';
+    csv += kits.map(kit => kitToCsvRow(kit)).join('');
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+
+    // Попробуем Shared Files если доступно и поддерживается
+    try {
+        if (navigator.share && navigator.canShare) {
+            const file = new File([blob], `cosmozar-export-${currentBranch}.csv`, { type: 'text/csv' });
+            if (navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    title: 'Экспорт Cosmozar',
+                    text: `Данные проверки комплектов (${BRANCH_NAMES[currentBranch]})`,
+                    files: [file]
+                }).catch(err => {
+                    console.warn('Share failed, fallback to download:', err);
+                    triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
+                });
+                return;
+            }
+        }
+    } catch (e) {
+        // Защищаемся от браузеров, где canShare бросает ошибку
+        console.warn('Share check error, fallback to download', e);
+    }
+
+    // fallback: обычная загрузка
+    triggerDownload(blob, `cosmozar-export-${currentBranch}.csv`);
+}
+
+function triggerDownload(blob, filename = 'cosmozar-export.csv') {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+
+    // скрытый элемент, клик, очистка
+    link.style.display = 'none';
+    document.body.appendChild(link);
+
+    // Пометка для iOS: открываем в новом окне, если download не поддерживается
+    const clickResult = (() => {
+        try {
+            link.click();
+            return true;
+        } catch (e) {
+            return false;
+        }
+    })();
+
+    setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        if (!clickResult) {
+            // как запасной вариант — открыть ссылку (пользователь сможет сохранить вручную)
+            window.open(url, '_blank');
+        }
+    }, 150);
+}
+
 
 
 function showPage(id) {
